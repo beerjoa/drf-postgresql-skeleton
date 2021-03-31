@@ -1,0 +1,1 @@
+drf-postgresql-skeleton
