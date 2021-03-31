@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  # Database
+  database:
+    image: postgres:12.2-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - "./database/init_database.sql:/docker-entrypoint-initdb.d/init.sql"
+    ports:
+      - "5432:5432"
+
+  # App
+  app:
+    image: drf-sample:0.1
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=admin
+    command: >
+      bash -c "python manage.py makemigrations &&
+               python manage.py migrate && 
+               python manage.py createsuperuser --noinput --email test@test.com &&
+               python manage.py runserver 0.0.0.0:8000"
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./app:/app"
+    depends_on:
+      - database
+  
