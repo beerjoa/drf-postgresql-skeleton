@@ -1,0 +1,23 @@
+# .travis.yml
+language: bash
+services:
+  - docker
+env:
+  global:
+    - DOCKER_COMPOSE_VERSION=1.27.4
+    - DOCKER_COMPOSE_FILE="./docker-compose.yml"
+    - DOCKER_IMAGE_PATH="./docker_image"
+    - DOCKER_IMAGE_TAG="drf-sample:0.1"
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker build -t ${DOCKER_IMAGE_TAG} ${DOCKER_IMAGE_PATH}
+
+script:
+  - docker-compose -f ${DOCKER_COMPOSE_FILE} up -d
+
+branches:
+  only:
+    - master
